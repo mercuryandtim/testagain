@@ -39,20 +39,20 @@ if not mongodb_uri or not db_name:
     logger.error("Environment variables mongodb_uri or DB_NAME are not set.")
     raise ValueError("Environment variables mongodb_uri or DB_NAME are not set.")
 
-@asynccontextmanager
-async def lifespan(app: FastAPI):
-    app.mongodb_client = MongoClient(mongodb_uri)
-    app.database = app.mongodb_client[db_name]
-    logger.info("Connected to the MongoDB database!")
+# @asynccontextmanager
+# async def lifespan(app: FastAPI):
+#     app.mongodb_client = MongoClient(mongodb_uri)
+#     app.database = app.mongodb_client[db_name]
+#     logger.info("Connected to the MongoDB database!")
     
-    try:
-        collections = app.database.list_collection_names()
-        print(f"Collections in {db_name}: {collections}")
-        yield
-    except Exception as e:
-        logger.error(e)
+#     try:
+#         collections = app.database.list_collection_names()
+#         print(f"Collections in {db_name}: {collections}")
+#         yield
+#     except Exception as e:
+#         logger.error(e)
         
-app = FastAPI(lifespan=lifespan)
+app = FastAPI()
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
