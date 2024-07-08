@@ -49,9 +49,8 @@ async def lifespan(app: FastAPI):
         collections = app.database.list_collection_names()
         print(f"Collections in {db_name}: {collections}")
         yield
-    finally:
-        app.mongodb_client.close()
-        logger.info("MongoDB connection closed")
+    except Exception as e:
+        logger.error(e)
         
 app = FastAPI(lifespan=lifespan)
 app.add_middleware(
