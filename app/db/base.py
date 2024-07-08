@@ -21,15 +21,17 @@ Base = declarative_base()
 username = os.getenv("usernameDb")
 password = os.getenv("password")
 host = os.getenv("host")  # e.g., 'localhost' or '127.0.0.1'
-port = os.getenv("port")  # Default MySQL port
+# port = os.getenv("port")  # Default MySQL port
 database_name = os.getenv("database_name")
 
-print(username,password,host,port,database_name)
+
 # username = 'hidh4125_admin'
 # password = 'Alberto471'
 # host = 'hidigi.asia'  # e.g., 'localhost' or '127.0.0.1'
-# port = '3306'  # Default MySQL port
+port = '3306'  # Default MySQL port
 # database_name = 'hidh4125_speechRecognition'
+
+print(username,password,host,port,database_name)
 
 # Create an engine to connect to the MySQL server
 engine = create_async_engine(f'mysql+aiomysql://{username}:{password}@{host}:{port}/{database_name}', echo=True, future=True)

@@ -8,7 +8,11 @@ from typing import Annotated
 # from transparent_background import Remover
 import uvicorn,os
 
-from datetime import timedelta
+from pymongo import MongoClient, GEOSPHERE
+from bson import ObjectId
+from contextlib import asynccontextmanager
+from pydantic import BaseModel, Field
+from datetime import timedelta, datetime
 from dotenv import load_dotenv
 from app.db.base import *
 from app.core.auth import *
@@ -20,10 +24,37 @@ load_dotenv()
 
 # Read environment variables
 host = os.getenv("HOST", "0.0.0.0")
-port = int(os.getenv("PORT", 7860))
+port = os.getenv("PORT", 7860)
 print(host,port)
-app = FastAPI()
 
+# Configure logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+# Connect to MongoDB
+mongodb_uri = os.getenv('mongodb_uri')
+db_name = os.getenv('DB_NAME')
+
+if not mongodb_uri or not db_name:
+    logger.error("Environment variables mongodb_uri or DB_NAME are not set.")
+    raise ValueError("Environment variables mongodb_uri or DB_NAME are not set.")
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    try:
+        app.mongodb_client = MongoClient(mongodb_uri)
+        app.database = app.mongodb_client[db_name]
+        logger.info("Connected to the MongoDB database!")
+        
+
+        collections = app.database.list_collection_names()
+        print(f"Collections in {db_name}: {collections}")
+        yield
+    finally:
+        await app.mongodb_client.close()
+        logger.info("MongoDB connection closed")
+        
+app = FastAPI(lifespan=lifespan)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -33,6 +64,16 @@ app.add_middleware(
 )
 
 app.include_router(router, prefix='/api/v1/user', tags=["User"])
+
+
+class Destination(BaseModel):
+    name: str
+    description: str
+    location: Dict[str, Any]
+    accommodations: List[Dict[str, Any]]
+    activities: List[Dict[str, Any]]
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+    updated_at: datetime = Field(default_factory=datetime.utcnow)
 
 @app.get("/")
 async def root():
@@ -56,6 +97,11 @@ async def login_for_access_token(response: Response, db: AsyncSession = Depends(
     # return "Login Successful"
     return {"access_token": access_token, "token_type": "bearer"}
 
+@app.get("/destinations", response_model=List[Destination])
+async def get_destinations():
+    db = app.database['destinations']
+    destinations = list(db.find())
+    return destinations
 
 if __name__ == "__main__":
     uvicorn.run("app.main:app", host="0.0.0.0", port=port, log_level="info")
