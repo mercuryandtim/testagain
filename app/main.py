@@ -20,7 +20,7 @@ load_dotenv()
 
 # Read environment variables
 host = os.getenv("HOST", "0.0.0.0")
-port = int(os.getenv("PORT", 3000))
+port = int(os.getenv("PORT", 7860))
 print(host,port)
 app = FastAPI()
 

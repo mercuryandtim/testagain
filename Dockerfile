@@ -27,4 +27,4 @@ RUN ls -l /code/output_frames
 
 ENV PATH="/code/venv/bin:$PATH"
 # Run app.py when the container launches using the virtual environment's Python interpreter
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "7680"]
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "7860"]
