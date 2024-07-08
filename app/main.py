@@ -41,17 +41,16 @@ if not mongodb_uri or not db_name:
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    app.mongodb_client = MongoClient(mongodb_uri)
+    app.database = app.mongodb_client[db_name]
+    logger.info("Connected to the MongoDB database!")
+    
     try:
-        app.mongodb_client = MongoClient(mongodb_uri)
-        app.database = app.mongodb_client[db_name]
-        logger.info("Connected to the MongoDB database!")
-        
-
         collections = app.database.list_collection_names()
         print(f"Collections in {db_name}: {collections}")
         yield
     finally:
-        await app.mongodb_client.close()
+        app.mongodb_client.close()
         logger.info("MongoDB connection closed")
         
 app = FastAPI(lifespan=lifespan)
