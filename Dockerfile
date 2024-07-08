@@ -14,4 +14,4 @@ RUN /bin/bash -c "source venv/bin/activate && pip install --no-cache-dir -r requ
 
 
 # Run app.py when the container launches using the virtual environment's Python interpreter
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "7680"]
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "7680"]
