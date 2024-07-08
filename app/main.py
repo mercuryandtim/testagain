@@ -52,7 +52,7 @@ async def lifespan(app: FastAPI):
     except Exception as e:
         logger.error(e)
         
-app = FastAPI()
+app = FastAPI(lifespan=lifespan)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
