@@ -24,7 +24,7 @@ load_dotenv()
 
 # Read environment variables
 host = os.getenv("HOST", "0.0.0.0")
-port = os.getenv("PORT", 7860)
+port = os.getenv("PORT", 8080)
 print(host,port)
 
 # Configure logging
