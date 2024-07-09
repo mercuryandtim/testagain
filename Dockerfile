@@ -33,5 +33,10 @@ EXPOSE 8000
 # Define environment variable
 ENV PYTHONUNBUFFERED=1
 
+# Print the PORT environment variable to ensure it's set
+RUN echo $PORT
+
 # Run Hypercorn when the container launches
 CMD ["hypercorn", "app.main:app", "--bind", "0.0.0.0:$PORT"]
+
+
