@@ -26,8 +26,7 @@ RUN ls -l /code
 RUN ls -l /code/output_frames
 
 ENV PATH="/code/venv/bin:$PATH"
-# Run app.py when the container launches using the virtual environment's Python interpreter
-# CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8080"]
+
 # Make port 8000 available to the world outside this container
 EXPOSE 8000
 
@@ -35,4 +34,4 @@ EXPOSE 8000
 ENV PYTHONUNBUFFERED=1
 
 # Run Hypercorn when the container launches
-CMD ["hypercorn", "app.main:app", "--bind", "0.0.0.0:8000"]
+CMD ["hypercorn", "app.main:app", "--bind", "0.0.0.0:$PORT"]
