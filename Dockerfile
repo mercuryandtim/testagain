@@ -15,6 +15,10 @@ RUN /code/venv/bin/pip install --no-cache-dir --upgrade -r /code/requirements.tx
 
 COPY --chown=user . /code
 
+# Copy the start script into the container and change permissions before switching to non-root user
+COPY start.sh /code/start.sh
+RUN chmod +x /code/start.sh
+
 # Create necessary directories and set permissions before switching to non-root user
 RUN mkdir -p /code/uploaded_videos /code/output_frames \
     && chown -R user:user /code \
@@ -32,10 +36,6 @@ EXPOSE 8000
 
 # Define environment variable
 ENV PYTHONUNBUFFERED=1
-
-# Copy the start script into the container
-COPY start.sh /code/start.sh
-RUN chmod +x /code/start.sh
 
 # Use the start script as the entry point
 CMD ["/code/start.sh"]
