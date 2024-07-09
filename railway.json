@@ -5,6 +5,6 @@
       "dockerfilePath": "./Dockerfile"
     },
     "deploy": {
-      "startCommand": "hypercorn app.main:app --bind \"[::]:$PORT\""
+      "startCommand": "/code/start.sh"
     }
-  }
+}
