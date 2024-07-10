@@ -37,5 +37,6 @@ EXPOSE 8000
 # Define environment variable
 ENV PYTHONUNBUFFERED=1
 
+CMD ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "7860"]
 # Use the start script as the entry point
-CMD ["/code/start.sh"]
+# CMD ["/code/start.sh"]
