@@ -13,41 +13,38 @@ from bson import ObjectId
 from contextlib import asynccontextmanager
 from pydantic import BaseModel, Field
 from datetime import timedelta, datetime
-from dotenv import load_dotenv
+from dotenv import load_dotenv, dotenv_values
+from app.api.v1.endpoints import user, auth
 from app.db.base import *
 from app.core.auth import *
-from app.router.user import *
+# from app.router.user import *
+from app.core.database import *
 
 # Load environment variables from .env file
-load_dotenv()
+dotenv_values(".env")
 
 
 # Read environment variables
 host = os.getenv("HOST", "0.0.0.0")
 port = os.getenv("PORT", 8080)
-print(host,port)
+
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-# Connect to MongoDB
-mongodb_uri = os.getenv('mongodb_uri')
-db_name = os.getenv('DB_NAME')
-
-if not mongodb_uri or not db_name:
-    logger.error("Environment variables mongodb_uri or DB_NAME are not set.")
-    raise ValueError("Environment variables mongodb_uri or DB_NAME are not set.")
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    app.mongodb_client = MongoClient(mongodb_uri)
-    app.database = app.mongodb_client[db_name]
+    # app.mongodb_client = MongoClient(mongodb_uri)
+    # app.database = app.mongodb_client[db_name]
+   
     logger.info("Connected to the MongoDB database!")
     
     try:
-        collections = app.database.list_collection_names()
-        print(f"Collections in {db_name}: {collections}")
+        await init_db()
+        # collections = app.database.list_collection_names()
+        # print(f"Collections in {db_name}: {collections}")
         yield
     except Exception as e:
         logger.error(e)
@@ -61,7 +58,8 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-app.include_router(router, prefix='/api/v1/user', tags=["User"])
+app.include_router(user.router, prefix='/api/v1/user', tags=["User"])
+app.include_router(auth.router, tags=["Auth"])
 
 
 class Destination(BaseModel):

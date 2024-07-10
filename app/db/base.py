@@ -1,5 +1,5 @@
 import asyncio, contextlib, logging, os, sys, time
-from dotenv import load_dotenv
+from dotenv import load_dotenv, dotenv_values
 from typing import AsyncIterator, Any, Dict, List, Optional, Tuple, Type, Union
 # from app.db.models.models import Base
 
@@ -10,7 +10,7 @@ from sqlalchemy.ext.asyncio import (
 )
 
 
-load_dotenv()
+dotenv_values(".env")
 
 from sqlalchemy import text
 from sqlalchemy.orm import declarative_base
@@ -20,21 +20,21 @@ Base = declarative_base()
 # # Define the MySQL connection details
 username = os.getenv("usernameDb")
 password = os.getenv("password")
-host = os.getenv("host")  # e.g., 'localhost' or '127.0.0.1'
-# port = os.getenv("port")  # Default MySQL port
-database_name = os.getenv("database_name")
+host = os.getenv("host")  
+port = os.environ.get("port")  
+mysql_name = os.getenv("MySQLDatabaseName")
 
 
 # username = 'hidh4125_admin'
 # password = 'Alberto471'
 # host = 'hidigi.asia'  # e.g., 'localhost' or '127.0.0.1'
-port = '3306'  # Default MySQL port
+# port = '3306'  # Default MySQL port
 # database_name = 'hidh4125_speechRecognition'
 
-print(username,password,host,port,database_name)
+print('port:',port)
 
 # Create an engine to connect to the MySQL server
-engine = create_async_engine(f'mysql+aiomysql://{username}:{password}@{host}:{port}/{database_name}', echo=True, future=True)
+engine = create_async_engine(f'mysql+aiomysql://{username}:{password}@{host}:{port}/{mysql_name}', echo=True, future=True)
 
 
 async_session = async_sessionmaker(
