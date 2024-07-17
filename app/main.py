@@ -53,7 +53,7 @@ async def lifespan(app: FastAPI):
 app = FastAPI(lifespan=lifespan)
 # Allow CORS for specific origin with credentials
 origins = [
-    "http://localhost:5000",
+    os.getenv("client")
 ]
 app.add_middleware(
     CORSMiddleware,
