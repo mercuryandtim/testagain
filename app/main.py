@@ -19,6 +19,7 @@ from app.db.base import *
 from app.core.auth import *
 # from app.router.user import *
 from app.core.database import *
+from app.core.middleware import BasicAuthMiddleware
 
 
 # Load environment variables from .env file
@@ -51,6 +52,10 @@ async def lifespan(app: FastAPI):
         logger.error(e)
         
 app = FastAPI(lifespan=lifespan)
+
+
+
+app.add_middleware(BasicAuthMiddleware, username=os.getenv("fastapiusername"), password=os.getenv("fastapipassword"))
 # Allow CORS for specific origin with credentials
 origins = [
     os.getenv("client")
