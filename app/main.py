@@ -13,12 +13,13 @@ from bson import ObjectId
 from contextlib import asynccontextmanager
 from pydantic import BaseModel, Field
 from datetime import timedelta, datetime
-from dotenv import load_dotenv, dotenv_values
-from app.api.v1.endpoints import user, auth
+from dotenv import dotenv_values
+from app.api.v1.endpoints import user, auth, ocr, ocrtemplate, config
 from app.db.base import *
 from app.core.auth import *
 # from app.router.user import *
 from app.core.database import *
+
 
 # Load environment variables from .env file
 dotenv_values(".env")
@@ -50,16 +51,23 @@ async def lifespan(app: FastAPI):
         logger.error(e)
         
 app = FastAPI(lifespan=lifespan)
+# Allow CORS for specific origin with credentials
+origins = [
+    "http://localhost:5000",
+]
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
 app.include_router(user.router, prefix='/api/v1/user', tags=["User"])
+app.include_router(ocrtemplate.router, prefix='/api/v1/ocrtemplate', tags=["OCR Template"])
+app.include_router(ocr.router, prefix='/api/v1/ocr', tags=["OCR"])
 app.include_router(auth.router, tags=["Auth"])
+app.include_router(config.router, prefix='/api/v1/config', tags=["Config"])
 
 
 class Destination(BaseModel):

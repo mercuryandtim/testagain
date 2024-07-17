@@ -2,8 +2,10 @@
 from pydantic import BaseModel, EmailStr, Field
 from typing import Optional
 from datetime import timedelta, datetime
+import uuid
 
 class User(BaseModel):
+    user_id: str = Field(default_factory=uuid.uuid4())
     username: str
     email: EmailStr
     password: str

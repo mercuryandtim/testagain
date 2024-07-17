@@ -12,7 +12,7 @@ class Settings(BaseSettings):
     COLLECTION_NAMES: list = ["users", "files", "templates", "extracted data", "external credentials"]
     SECRET_KEY: str = os.getenv("SECRET_KEY")
     ALGORITHM: str = "HS256"
-    ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
+    ACCESS_TOKEN_EXPIRE_MINUTES: int = 100
 
 settings = Settings()
 
