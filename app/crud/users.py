@@ -29,7 +29,7 @@ async def get_user_by_email(email: str):
     return user
 
 async def authenticate_user(username: str, password: str):
-    user = await get_user_by_username(username)
+    user = await get_user_by_email(username)
     print("User:", user)
     if user and verify_password(password, user["password"]):
         return user

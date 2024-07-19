@@ -9,23 +9,38 @@ from pymongo import ReturnDocument
 
 
 
-async def create_template(template: OCRTemplate, user_id: str):
+async def create_template(template: OCRTemplate, user_id: str, templateForAll: Optional[bool] = False):
     existing_template = await get_template_by_name_and_user(template.template_name, user_id)
     if existing_template:
         raise HTTPException(status_code=401, detail="Template already exists")
 
     template_dict = template.dict()
-    template_dict["user_id"] = user_id
+    if templateForAll:
+        template_dict["user_id"] = "all"
+    else:
+        template_dict["user_id"] = user_id
     db = get_database(settings.MongoDB_NAME)
     template = await db["templates"].insert_one(template_dict)
     if template:
         return OCRTemplate(**template_dict)
     return None
 
+async def get_all_templates():
+    db = get_database(settings.MongoDB_NAME)
+    templates = await db["templates"].find().to_list(1000)
+    return [OCRTemplateInDB(**template) for template in templates]
 
 async def get_all_templates_by_user_id(user_id: str, template_name: Optional[bool] = False)->  Union[List[OCRTemplateInDB], List[dict]]:
     db = get_database(settings.MongoDB_NAME)
-    templates = await db["templates"].find({"user_id": user_id}).to_list(1000)
+
+    # Query to find templates with user_id equal to the given user_id or "all"
+    templates = await db["templates"].find({
+        "$or": [
+            {"user_id": user_id},
+            {"user_id": "all"}
+        ]
+    }).to_list(1000)
+    # templates = await db["templates"].find({"user_id": user_id}).to_list(1000)
 
     if template_name:
         # Return only the template_name field

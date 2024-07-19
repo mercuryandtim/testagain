@@ -55,7 +55,7 @@ app = FastAPI(lifespan=lifespan)
 
 
 
-app.add_middleware(BasicAuthMiddleware, username=os.getenv("fastapiusername"), password=os.getenv("fastapipassword"))
+# app.add_middleware(BasicAuthMiddleware, username=os.getenv("fastapiusername"), password=os.getenv("fastapipassword"))
 # Allow CORS for specific origin with credentials
 origins = [
     os.getenv("client")

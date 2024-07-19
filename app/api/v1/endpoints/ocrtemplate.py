@@ -9,11 +9,21 @@ router = APIRouter()
 
 # In-memory storage for simplicity; replace with your database logic
 templates = {}
+@router.get("/all", response_model=List[OCRTemplateInDB])
+async def get_all_templates_endpoint():
+    templates = await get_all_templates()
+    return templates
 
 @router.post("/", response_model=OCRTemplate)
 async def create_OCR_template(template: OCRTemplate, current_user: User = Depends(get_current_user)):
     
     template = await create_template(template, current_user['user_id'])
+    return template
+
+@router.post("/templateForAll", response_model=OCRTemplate)
+async def create_OCR_template(template: OCRTemplate, current_user: User = Depends(get_current_user)):
+    
+    template = await create_template(template, current_user['user_id'], templateForAll=True)
     return template
 
 @router.get("/", response_model=List[Union[OCRTemplateInDB, dict]])
@@ -29,6 +39,8 @@ async def get_template(template_name: str, current_user: dict = Depends(get_curr
     if not template:
         raise HTTPException(status_code=404, detail="Template not found")
     return template
+
+
 
 @router.put("/templates", response_model=OCRTemplate)
 async def update_template_endpoint(template: OCRTemplate, user: str = Depends(get_current_user)):
